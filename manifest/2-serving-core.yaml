@@ -4786,6 +4786,7 @@ metadata:
   annotations:
     knative.dev/example-checksum: "47c2487f"
 data:
+  activator-capacity: "1"
   _example: |
     ################################
     #                              #

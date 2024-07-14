@@ -1,6 +1,6 @@
 #!/root/.kn-measure-venv/bin/python3
 
-import knative.install.measurement.scenarios as scenarios, sys
+import scenarios, sys
 
 arch = sys.argv[1]
 
