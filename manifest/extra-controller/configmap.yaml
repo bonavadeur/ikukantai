@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-ikukantai
+  namespace: knative-serving
+data:
+  autoscaler-test: autoscaler-tesuto
+  rein-greeting: konnichiwa
+  activator-serving-local: "disabled"
+  ikukantai-miporin-mode: "careful"
+  ikukantai-autoscaler-enablekpa: "false"
+  ikukantai-miporin-weighted: |
+    "100,0,0"
+    "0,100,0"
+    "0,0,100"
+  queue-meter-exporter-scan-frequency: "2"
+  queue-max-meter-exporter-age: "10"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-ikukantai
+  namespace: default
+data:
+  queue-tesuto: ohayou
+  queue-meter-exporter-scan-frequency: "2"
+  queue-max-meter-exporter-age: "10"
+---

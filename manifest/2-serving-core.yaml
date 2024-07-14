@@ -344,6 +344,168 @@ roleRef:
   name: knative-serving-aggregated-addressable-resolver
   apiGroup: rbac.authorization.k8s.io
 ---
+# Copyright 2018 The Knative Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activator
+  namespace: knative-serving
+  labels:
+    app.kubernetes.io/component: activator
+    app.kubernetes.io/version: "1.12.1"
+    app.kubernetes.io/name: knative-serving
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: activator
+      role: activator
+  template:
+    metadata:
+      labels:
+        app: activator
+        role: activator
+        app.kubernetes.io/component: activator
+        app.kubernetes.io/name: knative-serving
+        app.kubernetes.io/version: "1.12.1"
+    spec:
+      serviceAccountName: activator
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - node1
+                - node3
+      containers:
+        - name: activator
+          # This is the Go import path for the binary that is containerized
+          # and substituted here.
+          # image: gcr.io/knative-releases/knative.dev/serving/cmd/activator@sha256:4cdbe7acc718f55005c0fed4633e9e9feb64f03830132b5dd007e4088a0b2e9f
+          image: docker.io/bonavadeur/ikukantai-activator:v1.1-faast-15nov24
+          # The numbers are based on performance test results from
+          # https://github.com/knative/serving/issues/1625#issuecomment-511930023
+          resources:
+            requests:
+              cpu: 300m
+              memory: 60Mi
+            limits:
+              cpu: 1000m
+              memory: 600Mi
+          env:
+            # Run Activator with GC collection when newly generated memory is 500%.
+            - name: GOGC
+              value: "500"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SYSTEM_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: CONFIG_LOGGING_NAME
+              value: config-logging
+            - name: CONFIG_OBSERVABILITY_NAME
+              value: config-observability
+            # TODO(https://github.com/knative/pkg/pull/953): Remove stackdriver specific config
+            - name: METRICS_DOMAIN
+              value: knative.dev/internal/serving
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          ports:
+            - name: metrics
+              containerPort: 9090
+            - name: profiling
+              containerPort: 8008
+            - name: http1
+              containerPort: 8012
+            - name: h2c
+              containerPort: 8013
+          readinessProbe:
+            httpGet:
+              port: 8012
+              httpHeaders:
+                - name: k-kubelet-probe
+                  value: "activator"
+            periodSeconds: 5
+            failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              port: 8012
+              httpHeaders:
+                - name: k-kubelet-probe
+                  value: "activator"
+            periodSeconds: 10
+            failureThreshold: 12
+            initialDelaySeconds: 15
+      # The activator (often) sits on the dataplane, and may proxy long (e.g.
+      # streaming, websockets) requests.  We give a long grace period for the
+      # activator to "lame duck" and drain outstanding requests before we
+      # forcibly terminate the pod (and outstanding connections).  This value
+      # should be at least as large as the upper bound on the Revision's
+      # timeoutSeconds property to avoid servicing events disrupting
+      # connections.
+      terminationGracePeriodSeconds: 600
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: activator-service
+  namespace: knative-serving
+  labels:
+    app: activator
+    app.kubernetes.io/component: activator
+    app.kubernetes.io/version: "1.12.1"
+    app.kubernetes.io/name: knative-serving
+spec:
+  selector:
+    app: activator
+  ports:
+    # Define metrics and profiling for them to be accessible within service meshes.
+    - name: http-metrics
+      port: 9090
+      targetPort: 9090
+    - name: http-profiling
+      port: 8008
+      targetPort: 8008
+    - name: http
+      port: 80
+      targetPort: 8012
+    - name: http2
+      port: 81
+      targetPort: 8013
+    - name: https
+      port: 443
+      targetPort: 8112
+  type: ClusterIP
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -388,7 +550,6 @@ roleRef:
   kind: ClusterRole
   name: knative-serving-activator-cluster
   apiGroup: rbac.authorization.k8s.io
-
 ---
 # Copyright 2018 The Knative Authors
 #
@@ -4757,8 +4918,8 @@ metadata:
 spec:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
-  image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:7f1dd4cce2f85d31be8350420a528cc5c7d8b1bf5979ec77c29dc1293f82dc83
-
+  # image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:7f1dd4cce2f85d31be8350420a528cc5c7d8b1bf5979ec77c29dc1293f82dc83
+  image: docker.io/bonavadeur/ikukantai-queue:v1.1-faast-15nov24
 ---
 # Copyright 2018 The Knative Authors
 #
@@ -5155,7 +5316,8 @@ metadata:
 data:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
-  queue-sidecar-image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:7f1dd4cce2f85d31be8350420a528cc5c7d8b1bf5979ec77c29dc1293f82dc83
+  # queue-sidecar-image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:7f1dd4cce2f85d31be8350420a528cc5c7d8b1bf5979ec77c29dc1293f82dc83
+  queue-sidecar-image: docker.io/bonavadeur/ikukantai-queue:v1.1-faast-15nov24
   _example: |-
     ################################
     #                              #
@@ -5502,7 +5664,6 @@ data:
 
     # Default queue proxy resource requests and limits to good values for most cases if set.
     queueproxy.resource-defaults: "disabled"
-
 ---
 # Copyright 2018 The Knative Authors
 #
@@ -5692,14 +5853,12 @@ metadata:
   annotations:
     knative.dev/example-checksum: "53fda05f"
 data:
-  # loglevel.autoscaler: "fatal"
-  # loglevel.activator: "fatal"
-  # loglevel.net-kourier-controller: "fatal"
   loglevel.activator: fatal
   loglevel.autoscaler: fatal
   loglevel.controller: fatal
   loglevel.hpaautoscaler: fatal
   loglevel.net-kourier-controller: fatal
+  loglevel.queueproxy: fatal
   _example: |
     ################################
     #                              #
@@ -5959,7 +6118,7 @@ data:
     # fronting Knative with an external loadbalancer that deals with TLS termination and
     # Knative doesn't know about that otherwise.
     default-external-scheme: "http"
-
+  ingress-class: kourier.ingress.networking.knative.dev
 ---
 # Copyright 2018 The Knative Authors
 #
@@ -6079,7 +6238,7 @@ data:
     # enabled, the Knative Serving pods expose the profiling data on an alternate HTTP port 8008.
     # The HTTP context root for profiling is then /debug/pprof/.
     profiling.enable: "false"
-
+  metrics.request-metrics-reporting-period-seconds: '5'
 ---
 # Copyright 2019 The Knative Authors
 #
@@ -6254,7 +6413,7 @@ spec:
           # This is the Go import path for the binary that is containerized
           # and substituted here.
           # image: gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler@sha256:28f45751cac2090019a74ec2801d1f8cd18210ae55159cacd0c9baf74ccc9d7c
-          image: docker.io/bonavadeur/ikukantai-autoscaler:dev
+          image: docker.io/bonavadeur/ikukantai-autoscaler:v1.1-faast-15nov24
           resources:
             requests:
               cpu: 100m
@@ -6389,7 +6548,7 @@ spec:
           # This is the Go import path for the binary that is containerized
           # and substituted here.
           # image: gcr.io/knative-releases/knative.dev/serving/cmd/controller@sha256:5d9b948e78bb4f54b602d98e02dedd291689b90295dadab10992f0d9ef2aa1d8
-          image: docker.io/bonavadeur/ikukantai-controller:dev
+          image: docker.io/bonavadeur/ikukantai-controller:v1.1-faast-15nov24
           resources:
             requests:
               cpu: 100m
