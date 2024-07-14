@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: miporin
+  namespace: knative-serving
+  labels:
+    app.kubernetes.io/component: miporin
+    app.kubernetes.io/name: miporin
+    app.kubernetes.io/version: "1.12.1"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: miporin
+  namespace: default
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["serving.knative.dev"]
+  resources: ["services"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["batch.bonavadeur.io"]
+  resources: ["seikas"]
+  verbs: ["get", "watch", "list", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: miporin
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: miporin
+  namespace: knative-serving
+- kind: ServiceAccount
+  name: activator
+  namespace: knative-serving
+- kind: ServiceAccount
+  name: default
+  namespace: default
+roleRef:
+  kind: Role
+  name: miporin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: miporin
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: miporin
+subjects:
+- kind: ServiceAccount
+  name: miporin
+  namespace: knative-serving
+- kind: ServiceAccount
+  name: default
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: miporin
+  apiGroup: rbac.authorization.k8s.io
+---

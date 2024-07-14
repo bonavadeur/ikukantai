@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: miporin
+  namespace: knative-serving
+spec:
+  selector:
+    app: miporin
+  ports:
+  - port: 80
+    targetPort: 18080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: miporin
+  namespace: knative-serving
+  labels:
+    app: miporin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: miporin
+  template:
+    metadata:
+      labels:
+        app: miporin
+    spec:
+      serviceAccount: miporin
+      hostname: miporin
+      containers:
+      - name: miporin
+        image: docker.io/bonavadeur/miporin:v1.1-faast-15nov24
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 18080
+        env:
+        - name: MIPORIN_ENVIRONMENT
+          value: "container"
+        envFrom:
+        - configMapRef:
+            name: config-ikukantai
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - node1
+---
