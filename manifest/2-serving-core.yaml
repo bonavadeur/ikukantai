@@ -52,6 +52,12 @@ rules:
     resources: ["secrets"]
     verbs: ["get", "list", "watch"]
     resourceNames: ["routing-serving-certs", "knative-serving-certs"]
+  - apiGroups: [""]
+    verbs: ["get", "list"]
+    resources: ["pod"]
+  - apiGroups: ["serving.knative.dev"]
+    verbs: ["get", "list", "watch"]
+    resources: ["services"]
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -68,6 +74,12 @@ rules:
   - apiGroups: ["serving.knative.dev"]
     resources: ["revisions"]
     verbs: ["get", "list", "watch"]
+  - apiGroups: ["crd.projectcalico.org"]
+    verbs: ["list", "get"]
+    resources: ["ipamblocks"]
+  - apiGroups: [""]
+    verbs: ["list", "get"]
+    resources: ["nodes"]
 
 ---
 # Copyright 2019 The Knative Authors
@@ -6457,6 +6469,9 @@ spec:
               containerPort: 8008
             - name: websocket
               containerPort: 8080
+            - name: kpa-server
+              containerPort: 9999
+              protocol: TCP
           readinessProbe:
             httpGet:
               port: 8080
@@ -6493,6 +6508,10 @@ spec:
     - name: http
       port: 8080
       targetPort: 8080
+    - name: kpa-server
+      protocol: TCP
+      port: 9999
+      targetPort: 9999
   selector:
     app: autoscaler
 
