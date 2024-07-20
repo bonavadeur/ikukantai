@@ -9,6 +9,10 @@
 
 This repo is a copy from official repo: [ikukantai](https://github.com/bonavadeur/ikukantai.git), for publication purpose.
 
+<p align="center">
+  <img src="images/logo.jpg" />
+</p>
+
 ## 1. Motivation
 
 By default, **Kubernetes** and **Knative** uses "Evenly Load Balance Algorithms" in order to routing traffic to Pods/Functions. This mechanism is effective in a stable and homogeneous computing environment (like Cloud Computing). It should be noted that, "Evenly Load Balance Algorithms" in Kubernetes and Knative works with difference technology*, but the results are the same.​
@@ -21,7 +25,7 @@ We propose an approach which improves Knative from inside. It is a Unified Serve
 
 ## 2. Architecture
 
----> picture
+![Arch](images/arch.png)
 
 ## 3. Installation
 
