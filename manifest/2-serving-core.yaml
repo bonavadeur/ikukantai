@@ -419,6 +419,9 @@ spec:
             limits:
               cpu: 1000m
               memory: 600Mi
+          envFrom:
+            - configMapRef:
+                name: config-ikukantai
           env:
             # Run Activator with GC collection when newly generated memory is 500%.
             - name: GOGC
@@ -6433,6 +6436,9 @@ spec:
             limits:
               cpu: 1000m
               memory: 1000Mi
+          envFrom:
+            - configMapRef:
+                name: config-ikukantai
           env:
             - name: POD_NAME
               valueFrom:
@@ -6575,6 +6581,9 @@ spec:
             limits:
               cpu: 1000m
               memory: 1000Mi
+          envFrom:
+            - configMapRef:
+                name: config-ikukantai
           env:
             - name: POD_NAME
               valueFrom:
