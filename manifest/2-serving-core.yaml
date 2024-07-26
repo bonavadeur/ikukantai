@@ -52,6 +52,12 @@ rules:
     resources: ["secrets"]
     verbs: ["get", "list", "watch"]
     resourceNames: ["routing-serving-certs", "knative-serving-certs"]
+  - apiGroups: [""]
+    verbs: ["get", "list"]
+    resources: ["pod"]
+  - apiGroups: ["serving.knative.dev"]
+    verbs: ["get", "list", "watch"]
+    resources: ["services"]
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -68,6 +74,12 @@ rules:
   - apiGroups: ["serving.knative.dev"]
     resources: ["revisions"]
     verbs: ["get", "list", "watch"]
+  - apiGroups: ["crd.projectcalico.org"]
+    verbs: ["list", "get"]
+    resources: ["ipamblocks"]
+  - apiGroups: [""]
+    verbs: ["list", "get"]
+    resources: ["nodes"]
 
 ---
 # Copyright 2019 The Knative Authors
@@ -397,7 +409,11 @@ spec:
           # This is the Go import path for the binary that is containerized
           # and substituted here.
           # image: gcr.io/knative-releases/knative.dev/serving/cmd/activator@sha256:4cdbe7acc718f55005c0fed4633e9e9feb64f03830132b5dd007e4088a0b2e9f
+<<<<<<< HEAD
           image: docker.io/bonavadeur/ikukantai-activator:v1.1-faast-15nov24
+=======
+          image: docker.io/bonavadeur/ikukantai-activator:v1.2-cnsm-15nov24
+>>>>>>> faast
           # The numbers are based on performance test results from
           # https://github.com/knative/serving/issues/1625#issuecomment-511930023
           resources:
@@ -407,6 +423,12 @@ spec:
             limits:
               cpu: 1000m
               memory: 600Mi
+<<<<<<< HEAD
+=======
+          envFrom:
+            - configMapRef:
+                name: config-ikukantai
+>>>>>>> faast
           env:
             # Run Activator with GC collection when newly generated memory is 500%.
             - name: GOGC
@@ -4919,7 +4941,11 @@ spec:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
   # image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:7f1dd4cce2f85d31be8350420a528cc5c7d8b1bf5979ec77c29dc1293f82dc83
+<<<<<<< HEAD
   image: docker.io/bonavadeur/ikukantai-queue:v1.1-faast-15nov24
+=======
+  image: docker.io/bonavadeur/ikukantai-queue:v1.2-cnsm-15nov24
+>>>>>>> faast
 ---
 # Copyright 2018 The Knative Authors
 #
@@ -5317,7 +5343,11 @@ data:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
   # queue-sidecar-image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:7f1dd4cce2f85d31be8350420a528cc5c7d8b1bf5979ec77c29dc1293f82dc83
+<<<<<<< HEAD
   queue-sidecar-image: docker.io/bonavadeur/ikukantai-queue:v1.1-faast-15nov24
+=======
+  queue-sidecar-image: docker.io/bonavadeur/ikukantai-queue:v1.2-cnsm-15nov24
+>>>>>>> faast
   _example: |-
     ################################
     #                              #
@@ -6413,7 +6443,11 @@ spec:
           # This is the Go import path for the binary that is containerized
           # and substituted here.
           # image: gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler@sha256:28f45751cac2090019a74ec2801d1f8cd18210ae55159cacd0c9baf74ccc9d7c
+<<<<<<< HEAD
           image: docker.io/bonavadeur/ikukantai-autoscaler:v1.1-faast-15nov24
+=======
+          image: docker.io/bonavadeur/ikukantai-autoscaler:v1.2-cnsm-15nov24
+>>>>>>> faast
           resources:
             requests:
               cpu: 100m
@@ -6421,6 +6455,9 @@ spec:
             limits:
               cpu: 1000m
               memory: 1000Mi
+          envFrom:
+            - configMapRef:
+                name: config-ikukantai
           env:
             - name: POD_NAME
               valueFrom:
@@ -6457,6 +6494,9 @@ spec:
               containerPort: 8008
             - name: websocket
               containerPort: 8080
+            - name: kpa-server
+              containerPort: 9999
+              protocol: TCP
           readinessProbe:
             httpGet:
               port: 8080
@@ -6493,6 +6533,10 @@ spec:
     - name: http
       port: 8080
       targetPort: 8080
+    - name: kpa-server
+      protocol: TCP
+      port: 9999
+      targetPort: 9999
   selector:
     app: autoscaler
 
@@ -6548,7 +6592,11 @@ spec:
           # This is the Go import path for the binary that is containerized
           # and substituted here.
           # image: gcr.io/knative-releases/knative.dev/serving/cmd/controller@sha256:5d9b948e78bb4f54b602d98e02dedd291689b90295dadab10992f0d9ef2aa1d8
+<<<<<<< HEAD
           image: docker.io/bonavadeur/ikukantai-controller:v1.1-faast-15nov24
+=======
+          image: docker.io/bonavadeur/ikukantai-controller:v1.2-cnsm-15nov24
+>>>>>>> faast
           resources:
             requests:
               cpu: 100m
@@ -6556,6 +6604,9 @@ spec:
             limits:
               cpu: 1000m
               memory: 1000Mi
+          envFrom:
+            - configMapRef:
+                name: config-ikukantai
           env:
             - name: POD_NAME
               valueFrom:
