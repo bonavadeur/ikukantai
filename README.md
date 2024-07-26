@@ -38,24 +38,67 @@ We propose an approach which improves Knative from inside. It is a Unified Serve
 + Calico installed on Kubernetes cluster  
 + MetalLB installed on Kubernetes cluster
 
-### 3.2. Install Knative Serving with Kourier is networking option
+### 3.2. Install monlat - the Latency Monitoring system
 
-In this step we install Knative Serving's components (CRD, Knative's Pod) by applying .yaml files. Notes that the applied manifest is modified by ours, we not use the original image. We develop extra features base on [Knative-Serving](https://github.com/knative/serving/tree/release-1.12) version 1.12.1 and [Kourier](https://github.com/knative-extensions/net-kourier/tree/release-1.12) version 1.12.1
+#### 3.2.1. Install Prometheus
+
+We follow Prometheus's installation guide in [Knative's Docs](https://knative.dev/docs/serving/observability/metrics/collecting-metrics/)
+
+```bash
+$ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+$ helm repo update
+$ helm install prometheus prometheus-community/kube-prometheus-stack -n default -f manifest/prometheus/values.yaml
+
+$ kubectl apply -f https://raw.githubusercontent.com/knative-extensions/monitoring/main/grafana/dashboards.yaml
+
+$ kubectl create namespace metrics
+$ kubectl apply -f https://raw.githubusercontent.com/knative/docs/main/docs/serving/observability/metrics/collector.yaml
+```
+
+#### 3.2.2. Install monlat
+
+We develop a Latency Monitoring system, for more detail and installation please visit [monlat](https://github.com/bonavadeur/monlat).
+
+### 3.3. Install Knative Serving with Kourier is networking option and Our Extra-Controller
+
+In this step we install Knative Serving's components (CRD, Knative's Pod) by applying .yaml files. Notes that the applied manifest is modified by ours, we do not use the original image. We develop extra features base on [Knative-Serving](https://github.com/knative/serving/tree/release-1.12) version 1.12.1 and [Kourier](https://github.com/knative-extensions/net-kourier/tree/release-1.12) version 1.12.1
 
 ```bash
 # Install CRD
 kubectl apply -f manifest/1-serving-crd.yaml
 # Install Knative's Pod
 kubectl apply -f manifest/2-serving-core.yaml
+# Extra configmap and RBAC
+kubectl apply -f manifest/extra-controller/configmap.yaml
+kubectl apply -f manifest/extra-controller/rbac.yaml
 # Install Networking Plugin
 kubectl apply -f manifest/3-kourier.yaml
 # Run domain config job
 kubectl apply -f manifest/4-serving-default-domain.yaml
 ```
 
-### 3.3. Making some changes
+Wait until default-domain job is success
 
-#### 3.3.1. Kourier Gateway
+```bash
+# check if default-domain job is success
+kubectl -n knative-serving get job | grep default-domain
+NAME             COMPLETIONS   DURATION   AGE
+default-domain   1/1           13s        71s
+# delete config job
+kubectl delete -f manifest/4-serving-default-domain.yaml
+# install new kourier controller
+kubectl -n knative-serving patch deploy net-kourier-controller --patch '{"spec":{"template":{"spec":{"containers":[{"name":"controller","image":"docker.io/bonavadeur/ikukantai-kourier:v1.2-cnsm-15nov24"}]}}}}'
+```
+
+Install remaining components
+
+```bash
+kubectl apply -f manifest/extra-controller/extra-controller.yaml
+```
+
+### 3.4. Making some changes
+
+#### 3.4.1. Kourier Gateway
 
 ```bash
 # replicate 3scale-gateway pod to 3 replicas
@@ -68,7 +111,7 @@ kubectl -n kourier-system patch service kourier-internal --patch '{"spec":{"inte
 
 Note that fill correct nodename in your cluster into second command. Let fill all nodenames.
 
-#### 3.3.2. Activator
+#### 3.4.2. Activator
 
 ```bash
 # replicate activator pod to 3 replicas
@@ -78,7 +121,7 @@ kubectl -n knative-serving patch deploy activator --patch '{"spec":{"template":{
 
 Note that fill correct nodename in your cluster into second command. Let fill all nodenames.
 
-#### 3.3.3. Check your setup
+#### 3.4.3. Check your setup
 
 You must see **3scale-gateway** and **activator** present in all nodes, each node has one **activator** and one **3scale-gateway**
 
@@ -93,88 +136,39 @@ NAME                                     READY   STATUS    RESTARTS         AGE 
 3scale-kourier-gateway-864554589-5dgxl   1/1     Running   11 (5h26m ago)   2d5h   10.233.75.28     node2   <none>           <none>
 3scale-kourier-gateway-864554589-btfqf   1/1     Running   12 (5h21m ago)   2d5h   10.233.71.29     node3   <none>           <none>
 3scale-kourier-gateway-864554589-p7q56   1/1     Running   13 (5h29m ago)   2d5h   10.233.102.176   node1   <none>           <none>
-```
 
-### 3.4. Install our extra controller
-
-```bash
-# Install extra controller
-ubuntu@node1:~$ kubectl apply -f manifest/extra-controller/configmap.yaml
-ubuntu@node1:~$ kubectl apply -f manifest/extra-controller/rbac.yaml
-ubuntu@node1:~$ kubectl apply -f manifest/extra-controller/extra-controller.yaml
-
+# miporin is our extra-controller
 ubuntu@node1:~$ kubectl -n knative-serving get pod | grep miporin
 miporin-597dcddbc-qvlc6                   1/1     Running     0                143m
 ```
-### 3.5. Install monlat - the Latency Monitoring system
 
-#### 3.5.1. Install Prometheus
-
-We follow Prometheus's installation guide in [Knative's Docs](https://knative.dev/docs/serving/observability/metrics/collecting-metrics/)
-
-Create values.yaml first
-
-```yaml
-kube-state-metrics:
-  metricLabelsAllowlist:
-    - pods=[*]
-    - deployments=[app.kubernetes.io/name,app.kubernetes.io/component,app.kubernetes.io/instance]
-prometheus:
-  prometheusSpec:
-    serviceMonitorSelectorNilUsesHelmValues: false
-    podMonitorSelectorNilUsesHelmValues: false
-grafana:
-  sidecar:
-    dashboards:
-      enabled: true
-      searchNamespace: ALL
-```
-
-Then install Prometheus
-
-```bash
-$ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-$ helm repo update
-$ helm install prometheus prometheus-community/kube-prometheus-stack -n default -f values.yaml
-
-$ kubectl apply -f https://raw.githubusercontent.com/knative-extensions/monitoring/main/grafana/dashboards.yaml
-
-$ kubectl create namespace metrics
-$ kubectl apply -f https://raw.githubusercontent.com/knative/docs/main/docs/serving/observability/metrics/collector.yaml
-```
-
-#### 3.5.2. Install monlat
-
-We develop a Latency Monitoring system, for more detail and installation please visit [monlat](https://github.com/bonavadeur/monlat).
-
-## 4. Experiments
+## 4. Try it out
 
 ### 4.1. Deploy hello-application
 
 ```bash
 # install a demoapp
-$ kubectl apply -f manifest/demo_app/hello.yaml
+$ kubectl apply -f manifest/demo/hello.yaml
 ```
 
 ### 4.2. Check system operation
 
 ```bash
 # check ksvc is ready
-$ kubectl get ksvc,pod -o wide | grep hello
-service.serving.knative.dev/hello   http://hello.default.192.168.133.2.sslip.io   hello-00001     he
-llo-00001   True
-pod/hello-00001-deployment-7484848464-8btwr                  2/2     Running   0                 5m4
-6s   10.233.71.1       node3   <none>           <none>
-pod/hello-00001-deployment-7484848464-dlsh5                  2/2     Running   0                 5m5
-0s   10.233.102.184    node1   <none>           <none>
-pod/hello-00001-deployment-7484848464-vpbxg                  2/2     Running   0                 5m4
-7s   10.233.75.7       node2   <none>           <none>
+$ kubectl get ksvc,servicemonitor,pod -o wide | grep hello
+service.serving.knative.dev/hello   http://hello.default.192.168.133.2.sslip.io   hello-00001     hello-00001   True
+servicemonitor.monitoring.coreos.com/hello
+pod/hello-00001-deployment-7484848464-8btwr                  2/2     Running   0                 5m46s   10.233.71.1       node3   <none>           <none>
+pod/hello-00001-deployment-7484848464-dlsh5                  2/2     Running   0                 5m50s   10.233.102.184    node1   <none>           <none>
+pod/hello-00001-deployment-7484848464-vpbxg                  2/2     Running   0                 5m47s   10.233.75.7       node2   <none>           <none>
 # curl to app
 $ curl hello.default.svc.cluster.local
 Konnichiwa from hello-00001-deployment-7484848464-dlsh5 in node1
 ```
 
 ### 4.3. Perform your experiments
+
+Perform your experiments
 
 ## 5. Contributor
 

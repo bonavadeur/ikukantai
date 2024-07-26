@@ -34,24 +34,3 @@ spec:
         env:
         - name: TARGET
           value: "Konnichiwa"
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  labels:
-    app: hello
-  name: hello
-  namespace: default
-spec:
-  endpoints:
-  - honorLabels: true
-    interval: 1s
-    path: /metrics
-    port: http-usermetric
-  namespaceSelector:
-    matchNames:
-    - default
-  selector:
-    matchLabels:
-      serving.knative.dev/service: hello
----

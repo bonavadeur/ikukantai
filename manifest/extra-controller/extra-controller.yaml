@@ -31,7 +31,7 @@ spec:
       hostname: miporin
       containers:
       - name: miporin
-        image: docker.io/bonavadeur/miporin:v1.1-faast-15nov24
+        image: docker.io/bonavadeur/miporin:v1.2-cnsm-15nov24
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 18080

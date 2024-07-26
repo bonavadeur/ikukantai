@@ -352,8 +352,11 @@ spec:
         kubernetes.io/hostname: node1
       containers:
         - name: controller
-          # image: gcr.io/knative-releases/knative.dev/net-kourier/cmd/kourier@sha256:9cd4d69a708a8cf8e597efe3f511494d71cf8eab1b2fd85545097069ad47d3f6
-          image: docker.io/bonavadeur/ikukantai-kourier:v1.1-faast-15nov24
+          image: gcr.io/knative-releases/knative.dev/net-kourier/cmd/kourier@sha256:9cd4d69a708a8cf8e597efe3f511494d71cf8eab1b2fd85545097069ad47d3f6
+          # image: docker.io/bonavadeur/ikukantai-kourier:v1.2-cnsm-15nov24
+          envFrom:
+            - configMapRef:
+                name: config-ikukantai
           env:
             - name: CERTS_SECRET_NAMESPACE
               value: ""
