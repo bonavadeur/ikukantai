@@ -166,10 +166,38 @@ Konnichiwa from hello-00001-deployment-7484848464-dlsh5 in node1
 
 Perform your experiments
 
-## 5. Contributor
+## 5. ikukantai ecosystem
+
+### 5.1. Support tools
+
+Those tools support `ikukantai` fleet operation and can work independent from `ikukantai` in any Kubernetes Cluster.
+
+[Monlat](https://github.com/bonavadeur/monlat) - the latency monitoring system for Kubernetes
+
+[Seika](https://github.com/bonavadeur/seika) - the Kubernetes Custom Resource maintains quantity of Pods in each Node
+
+### 5.2. The tank on the Fleet
+
+`ikukantai` is close-source, but you can exploit all extra power by using a tank deployed on the flight deck of the fleet. I have a plan for developing 5 extra-components that make implementing algorithm easier.
+
+[Miporin](https://github.com/bonavadeur/miporin) - the extra-controller of the Fleet
+
+[Yukari](https://github.com/bonavadeur/yukari) (comming soon) - Scheduling Implementation Module on the Fleet, written in Python
+
+[Hanasan](https://github.com/bonavadeur/hanasan) (comming soon) - Load Balancing Implementation Module on the Fleet, written in Python
+
+[Makochan](https://github.com/bonavadeur/makochan) (comming soon) - Queuing Implementation Module on the Fleet, written in Python
+
+[Saori](https://github.com/bonavadeur/saori) (comming soon) - collection of proto file for communication between Fleet and Tank team
+
+Panzer vor!
+
+## 6. Contributor
 
 Đào Hiệp - Bonavadeur
 
 The Future Internet Laboratory, Room E711, C7 Building, Hanoi University of Science and Technology, Vietnam.
+
+未来のインターネット研究室, C7 の E ７１１、ハノイ百科大学、ベトナム。
 
 ![](images/github-wp.png)
