@@ -18,7 +18,7 @@ If we want to use Kubernetes and Knative in Edge-Cloud, we need a more intellige
 
 Many related works work in deploying Knative in Edge-Cloud, but all of them are not unified-system approach. They don’t show the latency exitsts in Knative internally.
 
-We propose an approach which improves Knative from inside. It is a Unified Serverless System for Distributed System. It is ikukantai (行く艦隊 - the iku fleet, translated from Japanese).
+We propose an approach which improves Knative from inside. It is a Unified Serverless System for Distributed System. It is ikukantai (行く艦隊 - the iku Fleet - Hạm đội ikư - translated from Japanese).
 
 ## 2. Architecture
 
@@ -178,26 +178,22 @@ Those tools support `ikukantai` fleet operation and can work independent from `i
 
 ### 5.2. The tank on the Fleet
 
-`ikukantai` is close-source, but you can exploit all extra power by using a tank deployed on the flight deck of the fleet. I have a plan for developing 5 extra-components that make implementing algorithm easier.
+`ikukantai` is close-source, but you can exploit all extra power by using a tank deployed on the flight deck of the fleet. I have a plan for developing 4 extra-components that make algorithm implementing easier.
 
 [Miporin](https://github.com/bonavadeur/miporin) - the extra-controller of the Fleet
 
 [Yukari](https://github.com/bonavadeur/yukari) (comming soon) - Scheduling Implementation Module on the Fleet, written in Python
 
-[Hanasan](https://github.com/bonavadeur/hanasan) (comming soon) - Load Balancing Implementation Module on the Fleet, written in Python
+[Katyusha](https://github.com/bonavadeur/katyusha) (comming soon) - Load Balancing Implementation Module on the Fleet, written in Python
 
-[Makochan](https://github.com/bonavadeur/makochan) (comming soon) - Queuing Implementation Module on the Fleet, written in Python
-
-[Saori](https://github.com/bonavadeur/saori) (comming soon) - collection of proto file for communication between Fleet and Tank team
+[Nonna](https://github.com/bonavadeur/nonna) (comming soon) - Queuing Implementation Module on the Fleet, written in Python
 
 Panzer vor!
 
 ## 6. Contributor
 
-Đào Hiệp - Bonavadeur
-
-The Future Internet Laboratory, Room E711, C7 Building, Hanoi University of Science and Technology, Vietnam.
-
-未来のインターネット研究室, C7 の E ７１１、ハノイ百科大学、ベトナム。
+Đào Hiệp - Bonavadeur - ボナちゃん  
+The Future Internet Laboratory, Room E711, C7 Building, Hanoi University of Science and Technology, Vietnam.  
+未来のインターネット研究室, C7 の E ７１１、ハノイ百科大学、ベトナム。  
 
 ![](images/github-wp.png)
