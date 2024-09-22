@@ -1,5 +1,7 @@
 # ikukantai - 行く艦隊
 
+### (The Iku Fleet - Hạm Đội Ikư - 行く艦隊)
+
 [![LICENSE](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 ![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
@@ -12,13 +14,13 @@
 
 ## 1. Motivation
 
-By default, **Kubernetes** and **Knative** uses "Evenly Load Balance Algorithms" in order to routing traffic to Pods/Functions. This mechanism is effective in a stable and homogeneous computing environment (like Cloud Computing). It should be noted that, "Evenly Load Balance Algorithms" in Kubernetes and Knative works with difference technology*, but the results are the same.​
+By default, **Kubernetes** and **Knative** uses "Evenly Load Balance Algorithms" in order to routing traffic to Pods/Functions. This mechanism is effective in a stable and homogeneous computing environment (like Cloud Computing). It should be noted that, "Evenly Load Balance Algorithms" in Kubernetes and Knative works with difference technology, but the results are the same.​
 
-If we want to use Kubernetes and Knative in Edge-Cloud, we need a more intelligent routing mechanism which take care of network latency between node, and resources in each node, and .etc.
+In order to help Kubernetes and Knative operating better in Distributed System like Edge-Cloud, we developed a more intelligent routing mechanism which take care of network latency between node, and resources in each node, and .etc.
 
-Many related works work in deploying Knative in Edge-Cloud, but all of them are not unified-system approach. They don’t show the latency exitsts in Knative internally.
+Many related works work in deploying Knative in Edge-Cloud, but they are not unified-system approaches. They don’t show the latency exists in Knative internally.
 
-We propose an approach which improves Knative from inside. It is a Unified Serverless System for Distributed System. It is ikukantai (行く艦隊 - the iku Fleet - Hạm đội ikư - translated from Japanese).
+In this project, we propose an approach that improves Knative from the inside. It is a Unified Serverless System for Distributed Systems. It is `ikukantai` (行く艦隊 - The iku Fleet - Hạm Đội ikư - translated from Japanese).
 
 ## 2. Architecture
 
@@ -28,7 +30,7 @@ We propose an approach which improves Knative from inside. It is a Unified Serve
 
 ### 3.1. System requirements
 
-+ Three nodes are Physical Machine or VIrtual Machine, least 4 CPU and 6GB RAM each node  
++ Three nodes are Physical Machine or Virtual Machine, least 4 CPU and 6GB RAM each node  
 + Ubuntu-Server or Ubuntu Desktop version 20.04  
 + Kubernetes version 1.26.3  
 + Calico installed on Kubernetes cluster  
@@ -170,7 +172,7 @@ Perform your experiments
 
 ### 5.1. Support tools
 
-Those tools support `ikukantai` fleet operation and can work independent from `ikukantai` in any Kubernetes Cluster.
+The following tools support `ikukantai` Fleet operation and can work independently from `ikukantai` in any Kubernetes Cluster.
 
 [Monlat](https://github.com/bonavadeur/monlat) - the latency monitoring system for Kubernetes
 
@@ -178,7 +180,7 @@ Those tools support `ikukantai` fleet operation and can work independent from `i
 
 ### 5.2. The tank on the Fleet
 
-`ikukantai` is close-source, but you can exploit all extra power by using a tank deployed on the flight deck of the fleet. I have a plan for developing 4 extra-components that make algorithm implementing easier.
+`ikukantai` is close-source, but you can exploit all extra power by using tanks deployed on the flight deck of the Fleet. We have a plan for developing 4 extra-components that make algorithm implementing easier.
 
 [Miporin](https://github.com/bonavadeur/miporin) - the extra-controller of the Fleet
 
@@ -186,11 +188,11 @@ Those tools support `ikukantai` fleet operation and can work independent from `i
 
 [Katyusha](https://github.com/bonavadeur/katyusha) (comming soon) - Load Balancing Implementation Module on the Fleet, written in Python
 
-[Nonna](https://github.com/bonavadeur/nonna) (comming soon) - Queuing Implementation Module on the Fleet, written in Python
+[Nonna](https://github.com/bonavadeur/nonna) (comming soon) - Queuing Modifier Module on the Fleet, written in Python
 
 Panzer vor!
 
-## 6. Contributor
+## 6. Contributeur
 
 Đào Hiệp - Bonavadeur - ボナちゃん  
 The Future Internet Laboratory, Room E711, C7 Building, Hanoi University of Science and Technology, Vietnam.  
