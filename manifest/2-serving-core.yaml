@@ -370,7 +370,7 @@ roleRef:
 # See the License for the specific language governing permissions and
 # limitations under the License.
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: activator
   namespace: knative-serving
@@ -379,7 +379,7 @@ metadata:
     app.kubernetes.io/version: "1.12.1"
     app.kubernetes.io/name: knative-serving
 spec:
-  replicas: 2
+  # replicas: 2
   selector:
     matchLabels:
       app: activator
@@ -394,16 +394,16 @@ spec:
         app.kubernetes.io/version: "1.12.1"
     spec:
       serviceAccountName: activator
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/hostname
-                operator: In
-                values:
-                - node1
-                - node3
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: kubernetes.io/hostname
+      #           operator: In
+      #           values:
+      #           - node1
+      #           - node3
       containers:
         - name: activator
           # This is the Go import path for the binary that is containerized
@@ -6326,30 +6326,30 @@ data:
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: activator
-  namespace: knative-serving
-  labels:
-    app.kubernetes.io/component: activator
-    app.kubernetes.io/name: knative-serving
-    app.kubernetes.io/version: "1.12.1"
-spec:
-  minReplicas: 1
-  maxReplicas: 20
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: activator
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          # Percentage of the requested CPU
-          averageUtilization: 100
+# apiVersion: autoscaling/v2
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: activator
+#   namespace: knative-serving
+#   labels:
+#     app.kubernetes.io/component: activator
+#     app.kubernetes.io/name: knative-serving
+#     app.kubernetes.io/version: "1.12.1"
+# spec:
+#   minReplicas: 1
+#   maxReplicas: 20
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: activator
+#   metrics:
+#     - type: Resource
+#       resource:
+#         name: cpu
+#         target:
+#           type: Utilization
+#           # Percentage of the requested CPU
+#           averageUtilization: 100
 ---
 # Activator PDB. Currently we permit unavailability of 20% of tasks at the same time.
 # Given the subsetting and that the activators are partially stateful systems, we want

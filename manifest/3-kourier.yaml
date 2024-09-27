@@ -448,7 +448,7 @@ spec:
 # limitations under the License.
 
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: 3scale-kourier-gateway
   namespace: kourier-system
@@ -458,11 +458,11 @@ metadata:
     app.kubernetes.io/version: "1.12.1"
     app.kubernetes.io/name: knative-serving
 spec:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 100%
+  # strategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     maxUnavailable: 0
+  #     maxSurge: 100%
   selector:
     matchLabels:
       app: 3scale-kourier-gateway
@@ -606,31 +606,31 @@ spec:
     app: 3scale-kourier-gateway
   type: ClusterIP
 ---
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: 3scale-kourier-gateway
-  namespace: kourier-system
-  labels:
-    networking.knative.dev/ingress-provider: kourier
-    app.kubernetes.io/component: net-kourier
-    app.kubernetes.io/version: "1.12.1"
-    app.kubernetes.io/name: knative-serving
-spec:
-  minReplicas: 1
-  maxReplicas: 10
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: 3scale-kourier-gateway
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          # Percentage of the requested CPU
-          averageUtilization: 100
+# apiVersion: autoscaling/v2
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: 3scale-kourier-gateway
+#   namespace: kourier-system
+#   labels:
+#     networking.knative.dev/ingress-provider: kourier
+#     app.kubernetes.io/component: net-kourier
+#     app.kubernetes.io/version: "1.12.1"
+#     app.kubernetes.io/name: knative-serving
+# spec:
+#   minReplicas: 1
+#   maxReplicas: 10
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: 3scale-kourier-gateway
+#   metrics:
+#     - type: Resource
+#       resource:
+#         name: cpu
+#         target:
+#           type: Utilization
+#           # Percentage of the requested CPU
+#           averageUtilization: 100
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
