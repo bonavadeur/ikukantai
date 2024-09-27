@@ -11,7 +11,9 @@
 
 `ikukantai` is a Knative Serving based Serverless Platform designed for Distributed System.
 
-![ikukantai](images/ikukantai_wp.jpg)
+`ANNOUNCEMENT`: **`ikukantai`'s publication has been accepted at IEEE CloudNet Conference 2024 (International Conference on Cloud Networking)**
+
+![ikukantai](docs/images/ikukantai_wp.jpg)
 
 ## 1. Motivation
 
@@ -25,7 +27,7 @@ In this project, we propose an approach that improves Knative from the inside, a
 
 ## 2. Architecture
 
-![Arch](images/arch.png)
+![Arch](docs/images/arch.jpg)
 
 ## 3. Installation
 
@@ -191,4 +193,4 @@ Panzer vor!
 The Future Internet Laboratory, Room E711, C7 Building, Hanoi University of Science and Technology, Vietnam.  
 未来のインターネット研究室, C7 の E ７１１、ハノイ百科大学、ベトナム。  
 
-![](images/github-wp.png)
+![](docs/images/github-wp.png)
