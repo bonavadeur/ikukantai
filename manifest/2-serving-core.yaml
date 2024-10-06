@@ -408,8 +408,7 @@ spec:
         - name: activator
           # This is the Go import path for the binary that is containerized
           # and substituted here.
-          # image: gcr.io/knative-releases/knative.dev/serving/cmd/activator@sha256:4cdbe7acc718f55005c0fed4633e9e9feb64f03830132b5dd007e4088a0b2e9f
-          image: docker.io/bonavadeur/ikukantai-activator:v1.2-cnsm-15nov24
+          image: gcr.io/knative-releases/knative.dev/serving/cmd/activator@sha256:4cdbe7acc718f55005c0fed4633e9e9feb64f03830132b5dd007e4088a0b2e9f
           # The numbers are based on performance test results from
           # https://github.com/knative/serving/issues/1625#issuecomment-511930023
           resources:
@@ -4933,8 +4932,8 @@ metadata:
 spec:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
-  # image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:7f1dd4cce2f85d31be8350420a528cc5c7d8b1bf5979ec77c29dc1293f82dc83
-  image: docker.io/bonavadeur/ikukantai-queue:v1.2-cnsm-15nov24
+  image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:7f1dd4cce2f85d31be8350420a528cc5c7d8b1bf5979ec77c29dc1293f82dc83
+  # image: docker.io/bonavadeur/ikukantai-queue:v1.2-cnsm-15nov24
 ---
 # Copyright 2018 The Knative Authors
 #
@@ -5331,8 +5330,8 @@ metadata:
 data:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
-  # queue-sidecar-image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:7f1dd4cce2f85d31be8350420a528cc5c7d8b1bf5979ec77c29dc1293f82dc83
-  queue-sidecar-image: docker.io/bonavadeur/ikukantai-queue:v1.2-cnsm-15nov24
+  queue-sidecar-image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:7f1dd4cce2f85d31be8350420a528cc5c7d8b1bf5979ec77c29dc1293f82dc83
+  # queue-sidecar-image: docker.io/bonavadeur/ikukantai-queue:v1.2-cnsm-15nov24
   _example: |-
     ################################
     #                              #
@@ -6427,8 +6426,7 @@ spec:
         - name: autoscaler
           # This is the Go import path for the binary that is containerized
           # and substituted here.
-          # image: gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler@sha256:28f45751cac2090019a74ec2801d1f8cd18210ae55159cacd0c9baf74ccc9d7c
-          image: docker.io/bonavadeur/ikukantai-autoscaler:v1.2-cnsm-15nov24
+          image: gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler@sha256:28f45751cac2090019a74ec2801d1f8cd18210ae55159cacd0c9baf74ccc9d7c
           resources:
             requests:
               cpu: 100m
@@ -6572,8 +6570,7 @@ spec:
         - name: controller
           # This is the Go import path for the binary that is containerized
           # and substituted here.
-          # image: gcr.io/knative-releases/knative.dev/serving/cmd/controller@sha256:5d9b948e78bb4f54b602d98e02dedd291689b90295dadab10992f0d9ef2aa1d8
-          image: docker.io/bonavadeur/ikukantai-controller:v1.2-cnsm-15nov24
+          image: gcr.io/knative-releases/knative.dev/serving/cmd/controller@sha256:5d9b948e78bb4f54b602d98e02dedd291689b90295dadab10992f0d9ef2aa1d8
           resources:
             requests:
               cpu: 100m

@@ -62,7 +62,11 @@ $ kubectl apply -f https://raw.githubusercontent.com/knative/docs/main/docs/serv
 
 #### Install monlat
 
-Follow [monlat installation guide](https://github.com/bonavadeur/monlat) to install `monlat` corectly.
+Follow [monlat installation guide](https://github.com/bonavadeur/monlat) to install `monlat` corectly. `monlat` is released under Apache License.
+
+#### 3.2.2. Seika - Kubernetes Custom Resource maintains quantity of Pod in each Node
+
+To control the ability of create and delete Function in each Node exactly, we develop a Kubernetes Custom Resource named [Seika](https://github.com/bonavadeur/seika). Seika operate like a bunch of Deployments that each Deployment control number of Pod in only one Node. By using Seika, we can create more Functions in Node that have more traffic and delete less Functions in Node that have less traffic. To install, please visit [Seika](https://github.com/bonavadeur/seika). The Seika's document includes guides for installation, usage, development. `Seika` is released under Apache License.
 
 ### 3.3. Install Knative Serving with Kourier is networking option and Our Extra-Controller
 
@@ -91,8 +95,6 @@ NAME             COMPLETIONS   DURATION   AGE
 default-domain   1/1           13s        71s
 # delete config job
 kubectl delete -f manifest/4-serving-default-domain.yaml
-# install new kourier controller
-kubectl -n knative-serving patch deploy net-kourier-controller --patch '{"spec":{"template":{"spec":{"containers":[{"name":"controller","image":"docker.io/bonavadeur/ikukantai-kourier:v1.2-cnsm-15nov24"}]}}}}'
 ```
 
 Install remaining components
@@ -101,7 +103,15 @@ Install remaining components
 kubectl apply -f manifest/miporin/miporin.yaml
 ```
 
-`miporin` is the extra-controller working alongside and is independently of Knative's controller. For more information about `miporin`, please visit [bonavadeur/miporin](https://github.com/bonavadeur/miporin)
+`miporin` is the extra-controller working alongside and is independently of Knative's controller. For more information about `miporin`, please visit [bonavadeur/miporin](https://github.com/bonavadeur/miporin). Miporin is released under Apache License.
+
+Install correct images
+
+```bash
+# Replace Knative's images by Ikukantai's images
+chmod +x -R hack/*
+./hack/replace-image.sh
+```
 
 ### 3.4. Making some changes
 
@@ -113,7 +123,7 @@ kubectl -n kourier-system patch service kourier --patch '{"spec":{"internalTraff
 kubectl -n kourier-system patch service kourier-internal --patch '{"spec":{"internalTrafficPolicy":"Local"}}'
 ```
 
-#### 3.4.3. Check your setup
+### 3.5. Check your setup
 
 You must see **3scale-kourier-gateway** and **activator** present in all nodes, each node has one **activator** and one **3scale-kourier-gateway**
 
@@ -135,34 +145,57 @@ miporin-597dcddbc-qvlc6                   1/1     Running     0                1
 
 ## 4. Try it out
 
-### 4.1. Deploy hello-application
+Each time you deploy a **ksvc** (in API service.serving.knative.dev), `ikukantai` will create two custom resources automatically: one Seika and one ServiceMonitor.
+
++ **Seika** (in API seika.batch.bonavadeur.io) is used for ability of controlling Function creation and deletion precisely in each Node
++ **ServiceMonitor** (in API servicemonitor.monitoring.coreos.com) is used for scraping metrics of each Function to Prometheus
+
+First, apply a simple web application named *hello*. The annotation *autoscaling.knative.dev/window: "12s"* means that if there is not traffic come to system in 12s, the Function will be scaled down. Immediately after you apply *hello* Function, the first Pod created is not under your control *hello*. You need to wait until this pod deleted after 12s, the system is now under your control.
 
 ```bash
-# install a demoapp
+# install a demo app
 $ kubectl apply -f manifest/demo/hello.yaml
+Warning: Kubernetes default value is insecure, Knative may default this to secure in a future release: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation, spec.template.spec.containers[0].securityContext.capabilities, spec.template.spec.containers[0].securityContext.runAsNonRoot, spec.template.spec.containers[0].securityContext.seccompProfile
+service.serving.knative.dev/hello created
 ```
 
-### 4.2. Check system operation
+Get all relevant resources:
 
 ```bash
-# check knative-service is ready
-$ kubectl get ksvc,servicemonitor,pod -o wide | grep hello
-service.serving.knative.dev/hello   http://hello.default.192.168.133.2.sslip.io   hello-00001     hello-00001   True
+$ kubectl get ksvc,pod,seika,servicemonitor | grep hello
+service.serving.knative.dev/hello   http://hello.default.192.168.133.2.sslip.io   hello-00001    hello-00001   True    
+pod/hello-00001-deployment-7df54dc57f-rx7xr                  2/2     Running   0               11s
+seika.batch.bonavadeur.io/hello   ["node1","node2","node3"]   0-0-0/0-0-0
 servicemonitor.monitoring.coreos.com/hello
-pod/hello-00001-deployment-7484848464-8btwr                  2/2     Running   0                 5m46s   10.233.71.1       node3   <none>           <none>
-pod/hello-00001-deployment-7484848464-dlsh5                  2/2     Running   0                 5m50s   10.233.102.184    node1   <none>           <none>
-pod/hello-00001-deployment-7484848464-vpbxg                  2/2     Running   0                 5m47s   10.233.75.7       node2   <none>           <none>
-
-# curl to app from curl-pod
-$ curl hello.default.svc.cluster.local
-Konnichiwa from hello-00001-deployment-7484848464-dlsh5 in node1
 ```
 
-### 4.3. Perform your experiments
+Wait until the first Pod is deleted (after the period set by annotation autoscaling.knative.dev/window: "12s")
 
-Perform your experiments
+```bash
+$ kubectl get ksvc,pod,seika,servicemonitor | grep hello
+service.serving.knative.dev/hello   http://hello.default.192.168.133.2.sslip.io   hello-00001    hello-00001   True
+seika.batch.bonavadeur.io/hello   ["node1","node2","node3"]   0-0-0/0-0-0
+servicemonitor.monitoring.coreos.com/hello
+```
 
-## 5. ikukantai ecosystem
+Use `netem` setup latency between nodes. In this experiment, I setup latency from **node1**, **node2** to **node3** is 50ms. So, when make request from node3, a new Pod is prefer scheduled on **node3** instead of the remain nodes.
+
+```bash
+# make request from node3
+root@node3:~$ curl hello.default.svc.cluster.local
+Konnichiwa from hello-node3-xgvq5 in node3
+
+# list all resources
+root@node1:~$ kubectl get ksvc,pod,seika,servicemonitor | grep hello
+service.serving.knative.dev/hello   http://hello.default.192.168.133.2.sslip.io   hello-00001   hello-00001   True
+pod/hello-node3-xgvq5                                        2/2     Running   0               40s
+seika.batch.bonavadeur.io/hello   ["node1","node2","node3"]   0-0-1/0-0-1
+servicemonitor.monitoring.coreos.com/hello
+```
+
+The Scheduling Algorithm is implemented in [miporin](https://github.com/bonavadeur/miporin), package `github.com/bonavadeur/miporin/pkg/yukari`. To enable Scheduling Feature of `ikukantai` Fleet, set config `ikukantai-miporin-enable-yukari: "true"` in `configmap/config-ikukantai`, namespace `default`
+
+## 5. `ikukantai` ecosystem
 
 ### 5.1. Support tools
 
@@ -178,11 +211,11 @@ The following tools support `ikukantai` Fleet operation and can work independent
 
 [Miporin](https://github.com/bonavadeur/miporin) - tank commander, the extra-controller working alongside and is independently of Knative's controller, written in Go
 
-[Yukari](https://github.com/bonavadeur/yukari) (comming soon) - Scheduling Algorithm Implementation Module on the Fleet, written in Python
+[Yukari](https://github.com/bonavadeur/yukari) (comming soon) - Scheduling Algorithm Implementation Module on the Fleet, written in Go
 
-[Katyusha](https://github.com/bonavadeur/katyusha) (comming soon) - Load Balancing Algorithm Implementation Module on the Fleet, written in Python
+[Katyusha](https://github.com/bonavadeur/katyusha) (comming soon) - Load Balancing Algorithm Implementation Module on the Fleet, written in Go
 
-[Nonna](https://github.com/bonavadeur/nonna) (comming soon) - Queuing Modifier Module on the Fleet, written in Python
+[Nonna](https://github.com/bonavadeur/nonna) (comming soon) - Queuing Modifier Module on the Fleet, written in Go
 
 Panzer vor!
 

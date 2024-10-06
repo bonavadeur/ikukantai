@@ -25,4 +25,5 @@ data:
   queue-tesuto: ohayou
   queue-meter-exporter-scan-frequency: "2"
   queue-max-meter-exporter-age: "10"
+  ikukantai-miporin-enable-yukari: "true"
 ---
