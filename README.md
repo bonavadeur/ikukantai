@@ -20,7 +20,7 @@ By default, **Kubernetes** and **Knative** uses "Evenly Load Balance Algorithms"
 
 In order to help Kubernetes and Knative operating better in Distributed System like Edge-Cloud, we developed a more intelligent routing mechanism which take care of network latency between nodes, and resources in each node, and .etc.
 
-Many related works work in deploying Knative in Edge-Cloud, but they are not unified-system approaches. They don’t show the latency exists in Knative internally.
+Many related works work in deploying Knative in Edge-Cloud, but they are not unified-system approaches. They don’t clarify the latency that exists in Knative internally.
 
 In this project, we propose an approach that improves Knative from the inside, a Unified Serverless Platform for Distributed Systems. It is `ikukantai` (行く艦隊 - The iku Fleet - Hạm Đội Ikư - translated from Japanese).
 
