@@ -60,6 +60,24 @@ $ kubectl create namespace metrics
 $ kubectl apply -f https://raw.githubusercontent.com/knative/docs/main/docs/serving/observability/metrics/collector.yaml
 ```
 
+Note: [The OpenTelemetry Collector](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.exporter.logging/#:~:text=The%20OpenTelemetry%20Collector%20logging%20exporter,Collector%20repository%20in%20September%202024.) logging exporter is deprecated and removed from the upstream Collector repository in September 2024, so that you have to change all `logging` fields to `debug` using the following commands:
+
+```bash
+kubectl patch configmap otel-collector-config -n metrics --type='merge' -p='{
+  "metadata": {
+    "annotations": {
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"data\":{\"collector.yaml\":\"receivers:\\n  opencensus:\\n    endpoint: \\\"0.0.0.0:55678\\\"\\n\\nexporters:\\n  debug:\\n  prometheus:\\n    endpoint: \\\"0.0.0.0:8889\\\"\\nextensions:\\n  health_check:\\n  pprof:\\n  zpages:\\nservice:\\n  extensions: [health_check, pprof, zpages]\\n  pipelines:\\n    metrics:\\n      receivers: [opencensus]\\n      processors: []\\n      exporters: [prometheus]\"},\"kind\":\"ConfigMap\",\"metadata\":{\"annotations\":{},\"name\":\"otel-collector-config\",\"namespace\":\"metrics\"}}"
+    }
+  }
+}'
+
+kubectl patch configmap otel-collector-config -n metrics --type='merge' -p='{
+  "data": {
+    "collector.yaml": "receivers:\n  opencensus:\n    endpoint: \"0.0.0.0:55678\"\n\nexporters:\n  debug:\n  prometheus:\n    endpoint: \"0.0.0.0:8889\"\nextensions:\n  health_check:\n  pprof:\n  zpages:\nservice:\n  extensions: [health_check, pprof, zpages]\n  pipelines:\n    metrics:\n      receivers: [opencensus]\n      processors: []\n      exporters: [prometheus]"
+  }
+}'
+```
+
 #### Install monlat
 
 Follow [monlat installation guide](https://github.com/bonavadeur/monlat) to install `monlat` corectly. `monlat` is released under Apache License.
