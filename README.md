@@ -63,13 +63,13 @@ $ kubectl apply -f https://raw.githubusercontent.com/knative/docs/main/docs/serv
 Note: [The OpenTelemetry Collector](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.exporter.logging/#:~:text=The%20OpenTelemetry%20Collector%20logging%20exporter,Collector%20repository%20in%20September%202024.) logging exporter is deprecated and removed from the upstream Collector repository in September 2024, so that you have to change all `logging` fields to `debug` using the following commands:
 
 ```bash
-chmod +x hack/fix-otel-collector.sh
-./fix-otel-collector.sh
+chmod +x ./hack/fix-otel-collector-cfg.sh
+./hack/fix-otel-collector-cfg.sh
 ```
 
 #### Install monlat
 
-Follow [monlat installation guide](https://github.com/bonavadeur/monlat) to install `monlat` corectly. `monlat` is released under Apache License.
+Follow [monlat installation guide](https://github.com/bonavadeur/monlat) to install `monlat` correctly. `monlat` is released under Apache License.
 
 #### 3.2.2. Seika - Kubernetes Custom Resource maintains quantity of Pod in each Node
 
@@ -93,7 +93,7 @@ kubectl apply -f manifest/3-kourier.yaml
 kubectl apply -f manifest/4-serving-default-domain.yaml
 ```
 
-Wait until default-domain job is success
+Wait until job/default-domain is success
 
 ```bash
 # check if default-domain job is success
@@ -104,7 +104,7 @@ default-domain   1/1           13s        71s
 kubectl delete -f manifest/4-serving-default-domain.yaml
 ```
 
-Install remaining components
+Install extra-controller `miporin`
 
 ```bash
 kubectl apply -f manifest/miporin/miporin.yaml
@@ -112,7 +112,7 @@ kubectl apply -f manifest/miporin/miporin.yaml
 
 `miporin` is the extra-controller working alongside and is independently of Knative's controller. For more information about `miporin`, please visit [bonavadeur/miporin](https://github.com/bonavadeur/miporin). Miporin is released under Apache License.
 
-Install correct images
+Install correct images by version
 
 ```bash
 # Replace Knative's images by Ikukantai's images
