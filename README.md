@@ -63,8 +63,8 @@ $ kubectl apply -f https://raw.githubusercontent.com/knative/docs/main/docs/serv
 Note: [The OpenTelemetry Collector](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.exporter.logging/#:~:text=The%20OpenTelemetry%20Collector%20logging%20exporter,Collector%20repository%20in%20September%202024.) logging exporter is deprecated and removed from the upstream Collector repository in September 2024, so that you have to change all `logging` fields to `debug` using the following commands:
 
 ```bash
-chmod +x hack/fix-otel-collector.sh
-./fix-otel-collector.sh
+chmod +x hack/fix-otel-collector-cfg.sh
+./hack/fix-otel-collector-cfg.sh
 ```
 
 #### Install monlat
