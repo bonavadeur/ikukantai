@@ -445,9 +445,9 @@ spec:
             - name: METRICS_DOMAIN
               value: knative.dev/internal/serving
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
+            allowPrivilegeEscalation: true
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
             capabilities:
               drop:
                 - ALL
@@ -543,6 +543,9 @@ subjects:
   - kind: ServiceAccount
     name: activator
     namespace: knative-serving
+  - kind: ServiceAccount
+    name: default
+    namespace: default
 roleRef:
   kind: Role
   name: knative-serving-activator
