@@ -2,7 +2,7 @@
 
 ### (The Iku Fleet - Hạm Đội Ikư - 行く艦隊)
 
-[![release](https://img.shields.io/badge/ikukantai--v2.0-log?style=flat&label=release&color=crimson)]()
+[![release](https://img.shields.io/badge/ikukantai--v2.1-log?style=flat&label=release&color=crimson)]()
 [![license](https://img.shields.io/badge/closed--source-log?style=flat&label=license&color=darkred)](LICENSE)
 [![CloudNet2024](https://img.shields.io/badge/IEEE--CloudNet--2024-log?style=flat&label=publication&color=dodgerblue)](https://cloudnet2024.ieee-cloudnet.org)
 
@@ -226,11 +226,11 @@ The following tools support `ikukantai` Fleet operation and can work independent
 
 [Miporin](https://github.com/bonavadeur/miporin) - tank commander, the extra-controller working alongside and is independently of Knative's controller, written in Go
 
+[Nonna](https://github.com/bonavadeur/nonna) - Queuing Modifier Module on the Fleet, written in Go
+
 [Yukari](https://github.com/bonavadeur/yukari) (comming soon) - Scheduling Algorithm Implementation Module on the Fleet, written in Go
 
 [Katyusha](https://github.com/bonavadeur/katyusha) (comming soon) - Load Balancing Algorithm Implementation Module on the Fleet, written in Go
-
-[Nonna](https://github.com/bonavadeur/nonna) (comming soon) - Queuing Modifier Module on the Fleet, written in Go
 
 Panzer vor!
 

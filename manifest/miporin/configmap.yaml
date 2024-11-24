@@ -15,6 +15,9 @@ data:
     "0,0,100"
   queue-meter-exporter-scan-frequency: "2"
   queue-max-meter-exporter-age: "10"
+  # v2.1
+  ikukantai-enable-nonna: "false"
+  nonna-threads: "10"
 ---
 apiVersion: v1
 kind: ConfigMap
