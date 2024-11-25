@@ -9,6 +9,7 @@ data:
   activator-serving-local: "disabled"
   ikukantai-miporin-mode: "careful"
   ikukantai-autoscaler-enablekpa: "false"
+  ikukantai-ignore-container-concur-kpa: "true"
   ikukantai-miporin-weighted: |
     "100,0,0"
     "0,100,0"
