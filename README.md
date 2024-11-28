@@ -16,7 +16,7 @@
 [![Protobuf](https://img.shields.io/badge/Protobuf-log?style=for-the-badge&logo=nani&logoColor=green&labelColor=red&color=darkgreen)](https://protobuf.dev/)
 
 
-`ikukantai` is a Knative Serving based Serverless Platform designed for Distributed System.
+`ikukantai` is a Knative Serving based Serverless Platform designed for Distributed Computing Infrastructure. `ikukantai` is easy-to-develop platform supports research and the integration of Load-Balancing, Scheduling and Queuing algorithms in Container Virtualization environment.
 
 `ANNOUNCEMENT`: **`ikukantai`'s publication has been accepted at IEEE CloudNet Conference 2024 (International Conference on Cloud Networking)**
 
@@ -24,17 +24,17 @@
 
 ## 1. Motivation
 
-By default, **Kubernetes** and **Knative** uses "Evenly Load Balance Algorithms" in order to steer traffic to Pods/Functions. This mechanism is effective in a stable and homogeneous computing environment (like Cloud Computing). It should be noted that, "Evenly Load Balance Algorithms" in Kubernetes and Knative works with different algorithm, but the results are the same.​
+Container virtualization is becoming an inevitable trend in modern computing and infrastructure technology. Since its release in 2014, **Kubernetes** has established itself as the de facto standard for application deployment and system operations in the industry. Numerous projects under the CNCF umbrella have further strengthened **Kubernetes**'s position in cloud computing. Knative, a serverless project nurtured within the CNCF ecosystem, has introduced scale-to-zero capabilities to **Kubernetes**, offering new opportunities for resource optimization and sustainable energy solutions in the scientific community.
 
-In order to help Kubernetes and Knative operating better in Distributed System like Edge-Cloud, we developed a more intelligent routing mechanism which take care of network latency between nodes, and resources in each node, and .etc.
-
-Many related works work in deploying Knative in Edge-Cloud, but they are not unified-system approaches. They don’t clarify the latency that exists in Knative internally.
+The built-in Load-Balancing, Scheduling, Queuing algorithms implemented in both Vanilla **Kubernetes** and Vanilla Knative are designed for very general purposes but require significant improvements for specialized use cases. During [our research](docs/publication/CloudNet_2024.pdf) on deploying and evaluating Serverless technology in Edge-Cloud environment, we discovered that the Load-Balancing and Scheduling mechanism of **Kubernetes**/Knative is inadequate for such heterogeneous setups. `ikukantai` was born not only to address this issue but also to serve as a programmable platform that allows solving classic problems related to container Load-Balancing, Scheduling and Queing in the real testbed implementation approach while removing the complex programming barrier for scientists.
 
 In this project, we propose an approach that improves Knative from the inside, a Unified Serverless Platform for Distributed Systems. It is `ikukantai` (行く艦隊 - The iku Fleet - Hạm Đội Ikư - translated from Japanese).
 
 ## 2. Architecture
 
 ![Arch](docs/images/arch.jpg)
+
+To understand functions of modules: `monlat`, `Katyusha`, `Nonna`, `Seika` and `Miporin`, please jump to [5.`ikukantai` ecosystem](#ecosystem)
 
 ## 3. Installation
 
@@ -210,7 +210,7 @@ servicemonitor.monitoring.coreos.com/hello
 
 The Scheduling Algorithm is implemented in [miporin](https://github.com/bonavadeur/miporin), package `github.com/bonavadeur/miporin/pkg/yukari`. To enable Scheduling Feature of `ikukantai` Fleet, set config `ikukantai-miporin-enable-yukari: "true"` in `configmap/config-ikukantai`, namespace `default`
 
-## 5. `ikukantai` ecosystem
+## 5. `ikukantai` ecosystem <a name="ecosystem"></a>
 
 ### 5.1. Support tools
 
@@ -224,13 +224,11 @@ The following tools support `ikukantai` Fleet operation and can work independent
 
 `ikukantai` is closed-source, but you can exploit all extra power by using tanks deployed on the flight deck of the Fleet. We have a plan for developing 4 extra-components that make algorithm implementation easier in the near future.
 
-[Miporin](https://github.com/bonavadeur/miporin) - tank commander, the extra-controller working alongside and is independently of Knative's controller, written in Go
+[Miporin](https://github.com/bonavadeur/miporin) - tank commander, the extra-controller working alongside and is independently of Knative's controller. `miporin` also act as Scheduler of the Fleet. `miporin` is written in Go and release under Apache-2.0 License.
 
-[Nonna](https://github.com/bonavadeur/nonna) - Queuing Modifier Module on the Fleet, written in Go
+[Nonna](https://github.com/bonavadeur/nonna) - Queue Modifier Module on the Fleet, written in Go, released under Apache-2.0 License.
 
-[Yukari](https://github.com/bonavadeur/yukari) (comming soon) - Scheduling Algorithm Implementation Module on the Fleet, written in Go
-
-[Katyusha](https://github.com/bonavadeur/katyusha) (comming soon) - Load Balancing Algorithm Implementation Module on the Fleet, written in Go
+[Katyusha](https://github.com/bonavadeur/katyusha) (comming soon) - Load Balancing Algorithm Implementation Module on the Fleet, written in Go, will be released under Apache-2.0 License.
 
 Panzer vor!
 
