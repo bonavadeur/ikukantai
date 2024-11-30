@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TAG="v2.1"
+TAG="v2.2"
 
 # replace image of net-kourier, controller, activator, autoscaler
 kubectl -n knative-serving patch deploy net-kourier-controller --patch \
