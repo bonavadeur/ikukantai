@@ -19,6 +19,15 @@ data:
   # v2.1
   ikukantai-enable-nonna: "false"
   nonna-threads: "10"
+  # v2.2
+  yuza: "qFBZgYUShZU0CaGjmdUY822yuR8WFiKN"
+  kagi: "7iADCcbwhoyrGcTmrCZt4JrK8jUYwxgCxp2o7rpKxdyvN_VomcV82s1D8lYAg2Db"
+  ikukantai-enable-katyusha: "true"
+  katyusha-enable-fukabunsan: "true"
+  katyusha-enable-junbanmachi: "true"
+  katyusha-enable-outoushuugou: "true"
+  katyusha-junbanmachi-concurrent-request: "10"
+  katyusha-threads: "10"
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -228,7 +228,7 @@ The following tools support `ikukantai` Fleet operation and can work independent
 
 [Nonna](https://github.com/bonavadeur/nonna) - Queue Modifier Module on the Fleet, written in Go, released under Apache-2.0 License.
 
-[Katyusha](https://github.com/bonavadeur/katyusha) (comming soon) - Load Balancing Algorithm Implementation Module on the Fleet, written in Go, will be released under Apache-2.0 License.
+[Katyusha](https://github.com/bonavadeur/katyusha) - Load Balancing Algorithm Implementation Module on the Fleet, written in Go, released under Apache-2.0 License.
 
 Panzer vor!
 
