@@ -58,14 +58,14 @@ We develop a network latency monitoring system named `monlat`, for more detail a
 We follow Prometheus Stacks installation guide from [Knative's Docs](https://knative.dev/docs/serving/observability/metrics/collecting-metrics/)
 
 ```bash
-$ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-$ helm repo update
-$ helm install prometheus prometheus-community/kube-prometheus-stack -n default -f manifest/prometheus/values.yaml
+$ helm install prometheus ./manifest/kube-prometheus-stack -f manifest/prometheus/values.yaml
 
-$ kubectl apply -f https://raw.githubusercontent.com/knative-extensions/monitoring/main/grafana/dashboards.yaml
+$ kubectl create ns knative-serving
+$ kubectl create ns knative-eventing
+$ kubectl apply -f ./manifest/grafana/dashboard.yaml
 
 $ kubectl create namespace metrics
-$ kubectl apply -f https://raw.githubusercontent.com/knative/docs/main/docs/serving/observability/metrics/collector.yaml
+$ kubectl apply -f ./manifest/grafana/collector.yaml
 ```
 
 Note: [The OpenTelemetry Collector](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.exporter.logging/#:~:text=The%20OpenTelemetry%20Collector%20logging%20exporter,Collector%20repository%20in%20September%202024.) logging exporter is deprecated and removed from the upstream Collector repository in September 2024, so that you have to change all `logging` fields to `debug` using the following commands:
